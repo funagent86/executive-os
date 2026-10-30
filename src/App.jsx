@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   Activity, ArrowRight, BookOpen, Check, ChevronRight, CircleCheck, Download,
   Flame, Heart, Lightbulb, NotebookPen, PencilLine, Plus, Sparkles, Target,
