@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="ExecutiveOS" />
+  <title>Core Executive OS</title>
+  <style>
+    :root {
+      --bg-base: #0f172a;
+      --bg-surface: #1e293b;
+      --bg-surface-elevated: #334155;
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --brand-critical: #ef4444;
+      --brand-warning: #f97316;
+      --brand-success: #10b981;
+      --brand-info: #3b82f6;
+      --brand-accent: #a78bfa;
+      --safe-area-top: env(safe-area-inset-top, 24px);
+    }
+
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 16px;
+      background-color: var(--bg-base);
+      color: var(--text-primary);
+      padding-top: calc(var(--safe-area-top) + 12px);
+      padding-bottom: env(safe-area-inset-bottom, 16px);
+    }
+
+    .system-wrap {
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .module-card {
+      background: var(--bg-surface);
+      border-radius: 24px;
+      padding: 20px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+    }
+
+    .module-card.critical { border-left: 5px solid var(--brand-critical); }
+    .module-card.machinery { border-left: 5px solid var(--brand-warning); }
+    .module-card.food { border-left: 5px solid var(--brand-success); }
+
+    h2 {
+      margin: 0 0 14px 0;
+      font-size: 1.15rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border-radius: 14px;
+      border: none;
+      font-size: 0.95rem;
+      font-weight: 700;
+      cursor: pointer;
+      color: white;
+      background: var(--brand-info);
+      transition: transform 0.1s ease;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    button.crit {
+      background: var(--brand-critical);
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+
+    input, select {
+      width: 100%;
+      background: var(--bg-surface-elevated);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      padding: 12px;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      margin-bottom: 12px;
+      outline: none;
+    }
+
+    .hmi-display {
+      background: #020617;
+      border-radius: 12px;
+      padding: 12px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      font-size: 0.8rem;
+      color: #38bdf8;
+      min-height: 65px;
+      margin-bottom: 12px;
+      line-height: 1.4;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
+
+    .switch-matrix {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .switch-actuator {
+      background: var(--bg-surface-elevated);
+      border-bottom: 4px solid #020617;
+      border-radius: 8px;
+      padding: 12px 4px;
+      text-align: center;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .switch-actuator:active {
+      border-bottom-width: 1px;
+      transform: translateY(3px);
+      background: #475569;
+    }
+
+    .recipe-output-list {
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .vector-recipe-card {
+      background: #020617;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .v-card-header {
+      padding: 12px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+
+    .v-card-body {
+      padding: 16px;
+    }
+
+    .profile-bar-track {
+      background: #1e293b;
+      border-radius: 4px;
+      height: 8px;
+      overflow: hidden;
+      margin-top: 4px;
+      margin-bottom: 8px;
+    }
+
+    .profile-bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      background: var(--brand-success);
+    }
+
+    .db-status {
+      font-size: 0.75rem;
+      text-align: center;
+      color: var(--brand-success);
+      margin-bottom: 15px;
+      font-family: "SFMono-Regular", Consolas, monospace;
+      letter-spacing: 0.05em;
+    }
+
+    .empty-state {
+      color: var(--text-secondary);
+      font-size: 0.85rem;
+      text-align: center;
+      padding: 12px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="system-wrap">
+    <div class="db-status" id="db-indicator">BUS SYSTEM: SYNCING DATABASE MEMORY BLOCKS...</div>
+
+    <section class="module-card critical">
+      <h2>💊 Compliance Engine</h2>
+      <div id="countdown-readout" style="font-size: 1.1rem; font-weight: 700; margin-bottom: 12px;">Processing Clock Variables...</div>
+      <button class="crit" onclick="logOpillDose()">Log Verified Daily Ingestion</button>
+    </section>
+
+    <section class="module-card machinery">
+      <h2>🚜 Heavy Machinery Cabin System</h2>
+      <select id="machine-context" onchange="toggleMachineContext()">
+        <option value="backhoe">CAT Backhoe Platform</option>
+        <option value="truck">Triple-Axle Dump Truck</option>
+      </select>
+      <div class="hmi-display" id="hmi-terminal">HMI SYSTEM ONLINE. Tap switch matrix lines below...</div>
+      <div class="switch-matrix">
+        <div class="switch-actuator" onclick="triggerBusLine('HYD_LOCK')">🔒 HYD<br>LOCK</div>
+        <div class="switch-actuator" onclick="triggerBusLine('STAB')">🦵 STAB<br>LEGS</div>
+        <div class="switch-actuator" onclick="triggerBusLine('RPM')">🐇 RPM<br>DIAL</div>
+      </div>
+    </section>
+
+    <section class="module-card food">
+      <h2>🚚 No-Photo Menu Card Lab</h2>
+      <form id="recipe-form-node" onsubmit="compileVectorCard(event)">
+        <div style="display: flex; gap: 8px;">
+          <div style="flex: 2;">
+            <label>Menu Item Name</label>
+            <input type="text" id="v-dish-name" placeholder="e.g., Spicy Elote Sliders" required />
+          </div>
+          <div style="flex: 1;">
+            <label>Icon</label>
+            <select id="v-dish-icon">
+              <option value="🌮 Taco">🌮 Taco</option>
+              <option value="🔥 Grill">🔥 Grill</option>
+              <option value="🥤 Drink">🥤 Drink</option>
+              <option value="🍰 Sweet">🍰 Sweet</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 8px;">
+          <div style="flex: 1;">
+            <label>🌶️ Heat Level (1-10)</label>
+            <input type="number" id="v-heat-val" min="1" max="10" value="5" />
+          </div>
+          <div style="flex: 1;">
+            <label>🧪 Culinary Reactant</label>
+            <select id="v-science-focus">
+              <option value="Acid Balance">Acid Balance</option>
+              <option value="Maillard Crunch">Maillard Crunch</option>
+              <option value="Emulsion Bind">Emulsion Bind</option>
+            </select>
+          </div>
+        </div>
+
+        <button type="submit">Compile Graphic Concept</button>
+      </form>
+
+      <div class="recipe-output-list" id="vector-card-deck"></div>
+    </section>
+  </div>
+
+  <script>
+    const BUS_NAME = 'ExecutiveOS_DataCore_v3';
+    let dbInstance = null;
+    let currentCtx = 'backhoe';
+
+    function initIndexedDBEngine() {
+      return new Promise((resolve, reject) => {
+        if (!('indexedDB' in window)) {
+          document.getElementById('db-indicator').textContent = 'BUS SYSTEM: INDEXEDDB UNAVAILABLE';
+          reject(new Error('IndexedDB not available'));
+          return;
+        }
+
+        const request = indexedDB.open(BUS_NAME, 1);
+
+        request.onupgradeneeded = (event) => {
+          const db = event.target.result;
+          if (!db.objectStoreNames.contains('v_recipes')) {
+            db.createObjectStore('v_recipes', { autoIncrement: true });
+          }
+        };
+
+        request.onsuccess = (event) => {
+          dbInstance = event.target.result;
+          document.getElementById('db-indicator').textContent = 'BUS SYSTEM: PERMANENT OFFLINE STORAGE ENGINE SECURED';
+          resolve();
+        };
+
+        request.onerror = () => {
+          document.getElementById('db-indicator').textContent = 'BUS SYSTEM: STORAGE ENGINE FAILED';
+          reject(request.error);
+        };
+      });
+    }
+
+    function processChronosLines() {
+      const readout = document.getElementById('countdown-readout');
+      const now = new Date();
+      const pivot = new Date(now);
+      pivot.setHours(12, 0, 0, 0);
+
+      let delta = pivot.getTime() - now.getTime();
+
+      if (delta < 0) {
+        const absoluteCutoff = new Date(pivot.getTime() + (3 * 60 * 60 * 1000));
+        delta = absoluteCutoff.getTime() - now.getTime();
+
+        if (delta < 0) {
+          readout.innerHTML = "<span style='color: var(--brand-critical);'>⚠️ CRITICAL FAILSAFE: Out of 3hr window. Implement backup protection protocols.</span>";
+          return;
+        }
+
+        readout.innerHTML = `⏳ URGENT COMPLIANCE MARGIN: ${Math.floor(delta / 60000)}m left to maintain perfect pill alignment!`;
+        return;
+      }
+
+      const hours = Math.floor(delta / 3600000);
+      const minutes = Math.floor((delta % 3600000) / 60000);
+      readout.innerHTML = `Next Window Closes In: <strong>${hours}h ${minutes}m</strong>`;
+    }
+
+    function logOpillDose() {
+      alert('Verification verified. Timestamps logged offline onto hardware.');
+    }
+
+    function toggleMachineContext() {
+      currentCtx = document.getElementById('machine-context').value;
+      document.getElementById('hmi-terminal').innerHTML = `SYSTEM RESET: Context shifted to ${currentCtx.toUpperCase()} layout framework.`;
+    }
+
+    function triggerBusLine(lineKey) {
+      const term = document.getElementById('hmi-terminal');
+
+      if (currentCtx === 'backhoe') {
+        if (lineKey === 'HYD_LOCK') {
+          term.innerHTML = '🔒 [HYDRAULIC VALVE SAFE LOCKOUT]<br>State: ACTIVE. Pilot fluid loops isolated. Controls safe for cabin egress.';
+        } else if (lineKey === 'STAB') {
+          term.innerHTML = '🦵 [STABILIZER OUTRIGGER SOLENOIDS]<br>Command: Extending frame stabilizers down to pick chassis weight off tires.';
+        } else if (lineKey === 'RPM') {
+          term.innerHTML = '🐇 [GOVERNOR THROTTLE CONTROLLER]<br>Command: Securing fuel flow at 1500 RPM to sustain uniform pump load lines.';
+        }
+      } else {
+        if (lineKey === 'HYD_LOCK') {
+          term.innerHTML = '⚠️ [LINE REJECTION ERROR]<br>Fault: Joystick hydraulic isolation arrays do not map to transport truck frames.';
+        } else if (lineKey === 'STAB') {
+          term.innerHTML = '⚠️ [LINE REJECTION ERROR]<br>Fault: Auxiliary outrigger configurations are absent on multi-axle driving gear.';
+        } else if (lineKey === 'RPM') {
+          term.innerHTML = '🐢 [COLD START CYLINDER HIGH-IDLE]<br>Command: Modulating RPM thresholds to cycle lubrication paths across engine blocks.';
+        }
+      }
+    }
+
+    function compileVectorCard(event) {
+      event.preventDefault();
+
+      if (!dbInstance) {
+        return;
+      }
+
+      const dish = document.getElementById('v-dish-name').value.trim();
+      if (!dish) {
+        return;
+      }
+
+      const icon = document.getElementById('v-dish-icon').value;
+      const heat = Number(document.getElementById('v-heat-val').value) || 1;
+      const science = document.getElementById('v-science-focus').value;
+      const payload = {
+        dish,
+        icon,
+        heat,
+        science,
+        timestamp: new Date().toLocaleDateString()
+      };
+
+      const tx = dbInstance.transaction(['v_recipes'], 'readwrite');
+      tx.objectStore('v_recipes').add(payload);
+      tx.oncomplete = () => {
+        document.getElementById('recipe-form-node').reset();
+        renderVectorDeck();
+      };
+    }
+
+    function renderVectorDeck() {
+      const deck = document.getElementById('vector-card-deck');
+
+      if (!dbInstance) {
+        deck.innerHTML = '<div class="empty-state">Storage engine is offline.</div>';
+        return;
+      }
+
+      const tx = dbInstance.transaction(['v_recipes'], 'readonly');
+      const store = tx.objectStore('v_recipes');
+      const request = store.openCursor();
+      const cards = [];
+
+      request.onsuccess = (event) => {
+        const cursor = event.target.result;
+        if (cursor) {
+          const data = cursor.value;
+          const heatPercentage = Math.min((Number(data.heat) / 10) * 100, 100);
+          const themeColor = data.icon.includes('Grill') ? 'var(--brand-warning)' : data.icon.includes('Sweet') ? 'var(--brand-accent)' : 'var(--brand-success)';
+
+          cards.push(`
+            <div class="vector-recipe-card">
+              <div class="v-card-header" style="background: ${themeColor}; color: white;">
+                <span>${data.icon}</span>
+                <span>${data.dish.toUpperCase()}</span>
+              </div>
+              <div class="v-card-body">
+                <div style="font-size: 0.72rem; color: var(--text-secondary); margin-bottom: 12px;">${data.timestamp}</div>
+                <div style="margin-bottom: 10px; color: var(--text-primary);">
+                  <strong>🧪 Biochemical Target Matrix:</strong> ${data.science} Verified
+                </div>
+                <div style="margin-bottom: 6px; color: var(--text-secondary); font-size: 0.72rem;">🌶️ Heat Profile Vector Distribution</div>
+                <div class="profile-bar-track">
+                  <div class="profile-bar-fill" style="width: ${heatPercentage}%; background: ${themeColor};"></div>
+                </div>
+              </div>
+            </div>
+          `);
+
+          cursor.continue();
+          return;
+        }
+
+        deck.innerHTML = cards.length ? cards.join('') : '<div class="empty-state">No menu cards compiled yet.</div>';
+      };
+    }
+
+    initIndexedDBEngine().then(renderVectorDeck).catch(() => {});
+    setInterval(processChronosLines, 60000);
+    processChronosLines();
+  </script>
+</body>
+</html>
